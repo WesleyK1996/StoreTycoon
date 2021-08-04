@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class Move : MonoBehaviour
 {
+    int speed = 2;
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKey(KeyCode.W))
-            transform.Translate(transform.forward * Time.deltaTime);
+            transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (Input.GetKey(KeyCode.A))
-            transform.Translate(-transform.right * Time.deltaTime);
+            transform.Translate(-Vector3.right * Time.deltaTime * speed);
         if (Input.GetKey(KeyCode.S))
-            transform.Translate(-transform.forward * Time.deltaTime);
+            transform.Translate(-Vector3.forward * Time.deltaTime * speed);
         if (Input.GetKey(KeyCode.D))
-            transform.Translate(transform.right * Time.deltaTime);
+            transform.Translate(Vector3.right * Time.deltaTime * speed);
     }
 }
