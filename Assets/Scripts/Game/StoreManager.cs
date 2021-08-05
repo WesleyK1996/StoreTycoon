@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 [Serializable]
 public class Store
 {
     public string name;
+    public int money;
     public GameObject parkingLot;
     public List<GameObject> advertising;
-    public Field[,] fields = new Field[8, 8]; 
+    public List<Field> fields;
 
     [Serializable]
     public class Field
     {
         public string name;
-        public Square[,] squares = new Square[5, 5];
+        public GameObject field;
+        public List<Square> squares;
 
         [Serializable]
         public class Square
@@ -36,38 +39,17 @@ public class Store
 
 public class StoreManager : MonoBehaviour
 {
+    public Build build;
+
     public Store store = new Store();
+
+    private void OnEnable()
+    {
+        build = GetComponent<Build>();
+    }
 
     void Start()
     {
-        StartCoroutine(SpawnSavedFields());
-    }
-
-    private IEnumerator SpawnSavedFields()
-    {
-        string[] letters = "A,B,C,D,E,F,G,H".Split(',');
-        string[] numbers = "1,2,3,4,5,6,7,8".Split(',');
-
-        for (int x = 0; x < letters.Length; x++)
-        {
-            for (int y = 0; y < numbers.Length; y++)
-            {
-                if (PlayerPrefs.HasKey(letters[x] + numbers[y] + "owned"))
-                    MakeField();
-            }
-        }
-
-        yield return null;
-    }
-
-    private void MakeField()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+       
     }
 }

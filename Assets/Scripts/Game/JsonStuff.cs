@@ -11,6 +11,7 @@ public class JsonStuff : MonoBehaviour
     string FilePath;
     string Dir;
     bool SaveInProgress;
+    public StoreManager manager;
 
     void Start()
     {
@@ -30,47 +31,61 @@ public class JsonStuff : MonoBehaviour
         yield return new WaitUntil(() => Directory.Exists(Dir));
         if (!File.Exists(FilePath))
         {
-            FileStream FS = File.Create(FilePath);
-            FS.Close();
-            yield return StartCoroutine(SaveJsonFile(new JsonData(), true));
+            CreateNewGame();
         }
         yield return new WaitUntil(() => File.Exists(FilePath));
 
         bool FailedRead = false;
+        string content = "";
         if (FilePath.Contains("://") || FilePath.Contains(":///"))
         {
             UnityEngine.Networking.UnityWebRequest www = UnityEngine.Networking.UnityWebRequest.Get(FilePath);
             yield return www.SendWebRequest();
             try
-            { JsonFile = JsonUtility.FromJson<JsonData>(www.downloadHandler.text); }
+            { content = www.downloadHandler.text; }
             catch
             { FailedRead = true; }
         }
         else
         {
             try
-            { JsonFile = JsonUtility.FromJson<JsonData>(FilePath); }
+            { content = File.ReadAllText(FilePath); }
             catch
-            { }
+            {
+                print("wut");
+                FailedRead = true; }
         }
 
         if (FailedRead)
-        {
             throw new FileLoadException();
-        }
+        else
+            manager.store = JsonUtility.FromJson<Store>(content);
     }
 
-    IEnumerator SaveJsonFile(StoreManager.Field , bool MakePretty)
+    private void CreateNewGame()
+    {
+        //FileStream FS = File.Create(FilePath);
+        //FS.Close();
+        //StartCoroutine(SaveJsonFile(manager.store = new Store(), true));
+        gameObject.AddComponent<NewGame>();
+    }
+
+    IEnumerator SaveJsonFile(Store store, bool MakePretty)
     {
         yield return new WaitWhile(() => SaveInProgress);
         SaveInProgress = true;
-        string s = JsonUtility.ToJson(Js);
+        string s = JsonUtility.ToJson(store);
         if (MakePretty)
             s = ConvertJsonToReadableString(s);
 
         using (TextWriter tw = new StreamWriter(FilePath, append: false))
             tw.WriteLine(s);
         SaveInProgress = false;
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveJsonFile(manager.store, true);
     }
 
     //IEnumerator SaveJsonFile(JsonData Js, bool MakePretty)
