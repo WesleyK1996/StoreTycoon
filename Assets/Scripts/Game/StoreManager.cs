@@ -39,16 +39,12 @@ public class Store
 
 public class StoreManager : MonoBehaviour
 {
-    public static StoreManager Instance;
     public Build build;
 
     public Store store = new Store();
 
     private void OnEnable()
     {
-        if (Instance == null)
-            Instance = this;
-        else Destroy(gameObject);
         build = GetComponent<Build>();
     }
 

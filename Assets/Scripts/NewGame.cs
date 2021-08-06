@@ -98,26 +98,21 @@ public class NewGame : MonoBehaviour
     private void MakeStartStore()
     {
         MakeFloors();
-        MakeWalls();
     }
 
     private void MakeFloors()
     {
-        foreach (Transform row in manager.transform)
-        {
-            foreach (Transform column in row)
+        foreach(Transform row in manager.transform)
+            foreach(Transform column in row)
             {
-                if (row.name + column.name == "A4" || row.name + column.name == "A5")
+                if(column.name == "A4" || column.name == "A5")
                 {
                     for (int i = 0; i < 25; i++)
                         manager.build.MakeFloor(column, SquareName(i), "Concrete");
                 }
+                return;
             }
-        }
     }
 
-    private void MakeWalls()
-    {
-
-    }
+    
 }

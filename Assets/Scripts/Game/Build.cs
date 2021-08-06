@@ -19,36 +19,16 @@ public class Build : MonoBehaviour
     public void MakeFloor(Transform field, string square, string floor)
     {
         GameObject go = Instantiate(Resources.Load(Path.Combine("Prefabs", "Floors", floor)) as GameObject, field);
-        go.transform.localPosition = SquareToPos(square);
-        for (int i = 0; i < StoreManager.Instance.store.fields.Count; i++)
-        {
-            if (StoreManager.Instance.store.fields[i].field = field.gameObject)
-            { }
-        }
+        go.transform.position = GetFloorPos(square);
     }
 
-    private Vector3 SquareToPos(string square)
+    private Vector3 GetFloorPos(string square)
     {
-        print(square);
-        int x = 0;
-        switch (square[0])
+        int x;
+        for (int i = 0; i < 5; i++)
         {
-            case 'A':
-                x = 0;
-                break;
-            case 'B':
-                x = 1;
-                break;
-            case 'C':
-                x = 2;
-                break;
-            case 'D':
-                x = 3;
-                break;
-            case 'E':
-                x = 4;
-                break;
+            if()
         }
-        return new Vector3(x, -.25f, -int.Parse(square[1].ToString()) + 1);
+        return new Vector3(x, 0, -int.Parse(square[1].ToString()));
     }
 }
