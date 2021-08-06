@@ -8,55 +8,33 @@ public class NewGame : MonoBehaviour
 {
     public StoreManager manager;
 
-    enum FieldLetter
-    {
-        A,
-        B,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H
-    }
-    FieldLetter fieldLetter;
-
-    public enum SquareLetter
-    {
-        A,
-        B,
-        C,
-        D,
-        E
-    }
-    SquareLetter squareLetter;
-
-    // Start is called before the first frame update
     void Start()
     {
+        print(0);
         try
         {
             Destroy(FindObjectOfType<StoreManager>().gameObject);
-            Destroy(GameObject.FindGameObjectWithTag("Parking"));
         }
         catch { }
         manager = Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject).GetComponent<StoreManager>();
         manager.store.name = "New Store";
         manager.store.money = 2000;
-        manager.build.BuildItem(null, Build.BuildableItemType.Parking, "Parking1", "");
+        manager.build.SpawnParkingLot(1);
         manager.store.parkingLot = GameObject.FindGameObjectWithTag("Parking");
 
-        for (int i = 0; i < 64; i++)
-            manager.store.fields.Add(MakeField(i));
-        MakeStartStore();
+        //print(1);
+        //for (int i = 0; i < 64; i++)
+        //    manager.store.fields.Add(MakeField(i));
+        //MakeStartStore();
     }
 
     Store.Field MakeField(int i)
     {
+        print("making field " + (i + 1));
         Store.Field field = new Store.Field();
-        field.name = FieldName(i);
+        field.name = Build.FieldName(i);
         field.field = GetField(field.name);
-        field.squares = GetSquares();
+        field.squares = GetSquares(field.field.transform);
 
         return field;
     }
@@ -77,30 +55,18 @@ public class NewGame : MonoBehaviour
         return null;
     }
 
-    private List<Store.Field.Square> GetSquares()
+    private List<Store.Field.Square> GetSquares(Transform parent)
     {
         List<Store.Field.Square> r = new List<Store.Field.Square>();
         for (int i = 0; i < 25; i++)
         {
-            GameObject go = new GameObject();
-
-           
-            r.Add(new Store.Field.Square() { square = Instantiate(go) });
-            go.name = SquareName(i);
+            GameObject go = null;
+            r.Add(new Store.Field.Square() { square = go = new GameObject() });
+            go.transform.parent = parent;
+            go.name = Build.SquareName(i);
+            go.transform.localPosition = Build.SquareToPos(Build.SquareName(i));
         }
         return r;
-    }
-
-    private string FieldName(int i)
-    {
-        fieldLetter = (FieldLetter)Mathf.FloorToInt(i / 8f);
-        return fieldLetter.ToString() + (i % 8 + 1);
-    }
-
-    private string SquareName(int i)
-    {
-        squareLetter = (SquareLetter)Mathf.FloorToInt(i / 5f);
-        return squareLetter.ToString() + (i % 5 + 1);
     }
 
     private void MakeStartStore()
@@ -111,17 +77,19 @@ public class NewGame : MonoBehaviour
 
     private void MakeFloors()
     {
+        print("making floors");
         Transform field = GetField("A4").transform;
         for (int i = 0; i < 25; i++)
-            manager.build.BuildItem(field, Build.BuildableItemType.Floors, "Concrete", SquareName(i));
+            manager.build.BuildFloor(field, Build.SquareName(i), "Concrete");
+
         field = GetField("A5").transform;
         for (int i = 0; i < 25; i++)
-            manager.build.BuildItem(field, Build.BuildableItemType.Floors, "Concrete", SquareName(i));
+            manager.build.BuildFloor(field, Build.SquareName(i), "Concrete");
     }
 
     private void MakeWalls()
     {
         Transform field = GetField("A4").transform;
-        manager.build.BuildItem(field, Build.BuildableItemType.Walls, "Concrete", "A1",Build.SquarePositions.Xneg);
+        manager.build.BuildWall(field, "A1", "Concrete", Build.SquarePositions.Xneg);
     }
 }

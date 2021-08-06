@@ -25,12 +25,14 @@ public class JsonStuff : MonoBehaviour
     /// <returns></returns>
     IEnumerator LoadLocalizedText()
     {
+        print("loading");
         if (!Directory.Exists(Dir))
             Directory.CreateDirectory(Dir);
         yield return new WaitUntil(() => Directory.Exists(Dir));
         if (!File.Exists(FilePath))
         {
             CreateNewGame();
+            yield return null;
         }
         yield return new WaitUntil(() => File.Exists(FilePath));
 
@@ -68,9 +70,8 @@ public class JsonStuff : MonoBehaviour
 
     private void CreateNewGame()
     {
-        FileStream FS = File.Create(FilePath);
-        FS.Close();
-        StartCoroutine(SaveJsonFile(StoreManager.Instance.store = new Store(), true));
+        //FileStream FS = File.Create(FilePath);
+        //FS.Close();
         gameObject.AddComponent<NewGame>();
     }
 
@@ -82,6 +83,7 @@ public class JsonStuff : MonoBehaviour
         string s = JsonUtility.ToJson(store);
         if (MakePretty)
             s = ConvertJsonToReadableString(s);
+        print(s);
 
         using (TextWriter tw = new StreamWriter(FilePath, append: false))
             tw.WriteLine(s);
