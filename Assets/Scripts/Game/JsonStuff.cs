@@ -11,7 +11,6 @@ public class JsonStuff : MonoBehaviour
     string FilePath;
     string Dir;
     bool SaveInProgress;
-    public StoreManager manager;
 
     void Start()
     {
@@ -49,29 +48,35 @@ public class JsonStuff : MonoBehaviour
         else
         {
             try
-            { content = File.ReadAllText(FilePath); }
+            {
+                content = File.ReadAllText(FilePath);
+            }
             catch
             {
-                print("wut");
-                FailedRead = true; }
+                FailedRead = true;
+            }
         }
 
         if (FailedRead)
             throw new FileLoadException();
         else
-            manager.store = JsonUtility.FromJson<Store>(content);
+        {
+            if (content != "")
+                StoreManager.Instance.store = JsonUtility.FromJson<Store>(content);
+        }
     }
 
     private void CreateNewGame()
     {
-        //FileStream FS = File.Create(FilePath);
-        //FS.Close();
-        //StartCoroutine(SaveJsonFile(manager.store = new Store(), true));
+        FileStream FS = File.Create(FilePath);
+        FS.Close();
+        StartCoroutine(SaveJsonFile(StoreManager.Instance.store = new Store(), true));
         gameObject.AddComponent<NewGame>();
     }
 
-    IEnumerator SaveJsonFile(Store store, bool MakePretty)
+    public IEnumerator SaveJsonFile(Store store, bool MakePretty)
     {
+        print("saving");
         yield return new WaitWhile(() => SaveInProgress);
         SaveInProgress = true;
         string s = JsonUtility.ToJson(store);
@@ -82,76 +87,6 @@ public class JsonStuff : MonoBehaviour
             tw.WriteLine(s);
         SaveInProgress = false;
     }
-
-    private void OnApplicationQuit()
-    {
-        SaveJsonFile(manager.store, true);
-    }
-
-    //IEnumerator SaveJsonFile(JsonData Js, bool MakePretty)
-    //{
-    //    yield return new WaitWhile(() => SaveInProgress);
-    //    SaveInProgress = true;
-    //    string s = JsonUtility.ToJson(Js);
-    //    if (MakePretty)
-    //        s = ConvertJsonToReadableString(s);
-
-    //    bool succes = false;
-    //    while (succes == false)
-    //    {
-    //        using (TextWriter tw = new StreamWriter(FilePath, append: false))
-    //        {
-    //            succes = true;
-    //            tw.WriteLine(s);
-    //        }
-    //        yield return new WaitForSecondsRealtime(0.1f);
-    //    }
-    //    SaveInProgress = false;
-    //}
-
-    //public void AddMood(string Name, string Mood, string Activity)
-    //{
-
-    //    if (JsonFile.Users == null)
-    //    {
-    //        JsonFile.Users = new List<JsonData.User>();
-    //    }
-
-    //    int n = 0;
-
-    //    if (JsonFile.Users.Count > 0)
-    //    {
-    //        n = JsonFile.Users.FindIndex(User => User.Name == Name);
-    //        if (n == -1)
-    //            n = NewUser(Name);
-    //    }
-    //    else n = NewUser(Name);
-    //    AddEntry(n, Mood, Activity);
-
-    //    SortNames(JsonFile);
-    //    StartCoroutine(SaveJsonFile(JsonFile, true));
-    //}
-
-
-    //private int NewUser(string Name)
-    //{
-    //    JsonFile.Users.Add(new JsonData.User());
-    //    JsonFile.Users[JsonFile.Users.Count - 1].Name = Name;
-    //    return JsonFile.Users.Count - 1;
-    //}
-
-    //void AddEntry(int Index, string Mood, string Activity)
-    //{
-    //    if (JsonFile.Users[Index].Entries == null)
-    //    {
-    //        JsonFile.Users[Index].Entries = new List<JsonData.User.Entry>();
-    //    }
-
-    //    JsonFile.Users[Index].Entries.Add(new JsonData.User.Entry());
-    //    JsonFile.Users[Index].Entries[JsonFile.Users[Index].Entries.Count - 1].Date = DateTime.Now.ToString();
-    //    JsonFile.Users[Index].Entries[JsonFile.Users[Index].Entries.Count - 1].Mood = Mood;
-    //    JsonFile.Users[Index].Entries[JsonFile.Users[Index].Entries.Count - 1].Activity = Activity;
-    //}
 
     string ConvertJsonToReadableString(string s)
     {

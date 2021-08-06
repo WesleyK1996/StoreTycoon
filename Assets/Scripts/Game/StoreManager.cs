@@ -23,7 +23,7 @@ public class Store
         [Serializable]
         public class Square
         {
-            public string name;
+            public GameObject square;
             public GameObject floor;
             //walls on the plus and minus x and z sides of the square 
             public GameObject wallXp;
@@ -39,17 +39,22 @@ public class Store
 
 public class StoreManager : MonoBehaviour
 {
+    public static StoreManager Instance;
     public Build build;
+    public JsonStuff data;
 
     public Store store = new Store();
-
     private void OnEnable()
     {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
         build = GetComponent<Build>();
+        data = FindObjectOfType<JsonStuff>();
     }
-
-    void Start()
+    private void OnApplicationQuit()
     {
-       
+        StartCoroutine(data.SaveJsonFile(store, true));
     }
 }

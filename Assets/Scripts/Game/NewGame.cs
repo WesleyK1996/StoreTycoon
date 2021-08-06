@@ -34,13 +34,17 @@ public class NewGame : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Destroy(FindObjectOfType<StoreManager>().gameObject);
-        Destroy(GameObject.FindGameObjectWithTag("Parking"));
-        manager = Instantiate(Resources.Load(Path.Combine("Prefabs","Store")) as GameObject).GetComponent<StoreManager>();
-        //storeManager.transform.position = 
+        try
+        {
+            Destroy(FindObjectOfType<StoreManager>().gameObject);
+            Destroy(GameObject.FindGameObjectWithTag("Parking"));
+        }
+        catch { }
+        manager = Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject).GetComponent<StoreManager>();
         manager.store.name = "New Store";
         manager.store.money = 2000;
-        manager.store.parkingLot = manager.build.SpawnParkingLot(1);
+        manager.build.BuildItem(null, Build.BuildableItemType.Parking, "Parking1", "");
+        manager.store.parkingLot = GameObject.FindGameObjectWithTag("Parking");
 
         for (int i = 0; i < 64; i++)
             manager.store.fields.Add(MakeField(i));
@@ -59,9 +63,9 @@ public class NewGame : MonoBehaviour
 
     private GameObject GetField(string fieldname)
     {
-        foreach(Transform Row in manager.transform)
+        foreach (Transform Row in manager.transform)
         {
-            if(Row.name == fieldname[0].ToString())
+            if (Row.name == fieldname[0].ToString())
             {
                 foreach (Transform Column in Row)
                 {
@@ -78,7 +82,11 @@ public class NewGame : MonoBehaviour
         List<Store.Field.Square> r = new List<Store.Field.Square>();
         for (int i = 0; i < 25; i++)
         {
-            r.Add(new Store.Field.Square() { name = SquareName(i) });
+            GameObject go = new GameObject();
+
+           
+            r.Add(new Store.Field.Square() { square = Instantiate(go) });
+            go.name = SquareName(i);
         }
         return r;
     }
@@ -92,27 +100,28 @@ public class NewGame : MonoBehaviour
     private string SquareName(int i)
     {
         squareLetter = (SquareLetter)Mathf.FloorToInt(i / 5f);
-        return squareLetter.ToString() + (i % 5 +1);
+        return squareLetter.ToString() + (i % 5 + 1);
     }
 
     private void MakeStartStore()
     {
         MakeFloors();
+        MakeWalls();
     }
 
     private void MakeFloors()
     {
-        foreach(Transform row in manager.transform)
-            foreach(Transform column in row)
-            {
-                if(column.name == "A4" || column.name == "A5")
-                {
-                    for (int i = 0; i < 25; i++)
-                        manager.build.MakeFloor(column, SquareName(i), "Concrete");
-                }
-                return;
-            }
+        Transform field = GetField("A4").transform;
+        for (int i = 0; i < 25; i++)
+            manager.build.BuildItem(field, Build.BuildableItemType.Floors, "Concrete", SquareName(i));
+        field = GetField("A5").transform;
+        for (int i = 0; i < 25; i++)
+            manager.build.BuildItem(field, Build.BuildableItemType.Floors, "Concrete", SquareName(i));
     }
 
-    
+    private void MakeWalls()
+    {
+        Transform field = GetField("A4").transform;
+        manager.build.BuildItem(field, Build.BuildableItemType.Walls, "Concrete", "A1",Build.SquarePositions.Xneg);
+    }
 }
