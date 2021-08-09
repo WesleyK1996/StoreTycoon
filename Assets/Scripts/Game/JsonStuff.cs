@@ -12,13 +12,13 @@ public class StoreData
     public int money;
     public int parkingLot;
     public List<string> advertising;
-    public List<FieldData> fields = new List<FieldData>();
+    public Dictionary<string, FieldData> fields = new Dictionary<string, FieldData>();
 
     [Serializable]
     public class FieldData
     {
         public string name;
-        public List<SquareData> squares = new List<SquareData>();
+        public Dictionary<string, SquareData> squares = new Dictionary<string, SquareData>();
 
         [Serializable]
         public class SquareData
@@ -48,6 +48,7 @@ public class JsonStuff : MonoBehaviour
     static string FilePath;
     string Dir;
     static bool SaveInProgress;
+    public bool delete;
 
     private void OnEnable()
     {
@@ -129,51 +130,51 @@ public class JsonStuff : MonoBehaviour
         storeData.parkingLot = int.Parse(store.parkingLot.name.Replace("Parking", ""));
         foreach (GameObject go in store.advertising)
             storeData.advertising.Add(go.name);
-        foreach (Store.Field f in store.fields)
+        foreach (Store.Field f in store.fields.Values)
         {
             StoreData.FieldData field = new StoreData.FieldData();
             field.name = f.name;
-            foreach (Store.Field.Square s in f.squares)
+            foreach (Store.Field.Square s in f.squares.Values)
             {
                 StoreData.FieldData.SquareData square = new StoreData.FieldData.SquareData();
                 square.name = s.self.name;
                 if (s.floor != null)
-                    square.floor = s.floor.name.Replace("Floor","");
+                    square.floor = s.floor.name;
                 else square.floor = null;
                 if (s.wallXp != null)
-                    square.wallXp = s.wallXp.name.Replace("Wall", "");
+                    square.wallXp = s.wallXp.name;
                 else square.wallXp = null;
                 if (s.wallXm != null)
-                    square.wallXm = s.wallXm.name.Replace("Wall", "");
+                    square.wallXm = s.wallXm.name;
                 else square.wallXm = null;
                 if (s.wallZp != null)
-                    square.wallZp = s.wallZp.name.Replace("Wall", "");
+                    square.wallZp = s.wallZp.name;
                 else square.wallZp = null;
                 if (s.wallZm != null)
-                    square.wallZm = s.wallZm.name.Replace("Wall", "");
+                    square.wallZm = s.wallZm.name;
                 else square.wallZm = null;
                 if (s.ceiling != null)
-                    square.ceiling = s.ceiling.name.Replace("Ceiling", "");
+                    square.ceiling = s.ceiling.name;
                 if (s.hangable != null)
-                    square.hangable = s.hangable.name.Replace("Hangable", "");
+                    square.hangable = s.hangable.name;
                 else square.hangable = null;
                 if (s.furniture != null)
-                    square.furniture = s.furniture.name.Replace("Furniture", "");
+                    square.furniture = s.furniture.name;
                 else square.furniture = null;
 
-                field.squares.Add(square);
+                field.squares.Add(square.name, square);
             }
-            storeData.fields.Add(field);
+            storeData.fields.Add(field.name, field);
         }
         return storeData;
     }
 
-    public static IEnumerator SaveJsonFile(StoreData data, bool MakePretty)
+    public static IEnumerator SaveJsonFile(Store store, bool MakePretty)
     {
         print("saving");
         yield return new WaitUntil(() => !SaveInProgress);
         SaveInProgress = true;
-        string s = JsonUtility.ToJson(data);
+        string s = JsonUtility.ToJson(StoreToStoreData(store));
         if (MakePretty)
             s = ConvertJsonToReadableString(s);
 
@@ -188,7 +189,8 @@ public class JsonStuff : MonoBehaviour
         Store store = Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject).GetComponent<StoreManager>().store;
         store.name = data.name;
         store.money = data.money;
-        store.parkingLot = Build.BuildParkingLot(data.parkingLot);
+        Build.BuildParkingLot(data.parkingLot);
+
         for (int i = 0; i < 64; i++)
         {
             Store.Field field = new Store.Field();
@@ -201,13 +203,13 @@ public class JsonStuff : MonoBehaviour
                 square.self.transform.parent = field.field.transform;
                 square.self.transform.localPosition = Build.SquareToPos(square.self.name);
                 if (data.fields[i].squares[j].floor != "")
-                    square.floor = Build.BuildFloor(square.self.transform, data.fields[i].squares[j].floor);
+                    Build.BuildFloor(data.fields[i].squares[j].floor, field.name, square.self.name);
                 if (data.fields[i].squares[j].wallXp != "")
-                    square.wallXp = Build.BuildWall(square.self.transform, data.fields[i].squares[j].wallXp, Build.SquarePositions.Xpos);
+                    Build.BuildWall(square.self.transform, data.fields[i].squares[j].wallXp, Build.SquarePositions.Xpos);
                 //the other stuffs
-                field.squares.Add(square);
+                field.squares.Add(square.self.name, square);
             }
-            store.fields.Add(field);
+            store.fields.Add(field.name, field);
         }
         print("LOADING INCOMPLETE");
     }
@@ -241,6 +243,7 @@ public class JsonStuff : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        StartCoroutine(SaveJsonFile(StoreToStoreData(FindObjectOfType<StoreManager>().store), true));
+        if (!delete)
+            StartCoroutine(SaveJsonFile(StoreToStoreData(FindObjectOfType<StoreManager>().store), true));
     }
 }

@@ -11,14 +11,14 @@ public class Store
     public int money;
     public GameObject parkingLot;
     public List<GameObject> advertising = new List<GameObject>();
-    public List<Field> fields = new List<Field>();
+    public Dictionary<string,Field> fields = new Dictionary<string,Field>();
 
     [Serializable]
     public class Field
     {
         public string name;
         public GameObject field;
-        public List<Square> squares = new List<Square>();
+        public Dictionary<string,Square> squares = new Dictionary<string, Square>();
 
         [Serializable]
         public class Square

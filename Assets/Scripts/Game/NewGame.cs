@@ -52,8 +52,9 @@ public class NewGame : MonoBehaviour
     {
         MakeFloors();
         MakeWalls();
+        MakeCeilings();
 
-        StartCoroutine(JsonStuff.SaveJsonFile(JsonStuff.StoreToStoreData(store), true));
+        //StartCoroutine(JsonStuff.SaveJsonFile(JsonStuff.StoreToStoreData(store), true));
     }
 
     private void MakeFloors()
@@ -72,30 +73,46 @@ public class NewGame : MonoBehaviour
     private void MakeWalls()
     {
         Transform field = Build.GetField("A4").transform;
-        Build.BuildWall(Build.GetSquare(field, "A5"), "Concrete", Build.SquarePositions.Xneg);
-        Build.BuildWall(Build.GetSquare(field, "A1"), "Concrete", Build.SquarePositions.Xneg);
-        Build.BuildWall(Build.GetSquare(field, "A1"), "Concrete", Build.SquarePositions.Zpos);
-        Build.BuildWall(Build.GetSquare(field, "B1"), "Concrete", Build.SquarePositions.Zpos);
-        Build.BuildWall(Build.GetSquare(field, "C1"), "Concrete", Build.SquarePositions.Zpos);
-        Build.BuildWall(Build.GetSquare(field, "D1"), "Concrete", Build.SquarePositions.Zpos);
-        Build.BuildWall(Build.GetSquare(field, "E1"), "Concrete", Build.SquarePositions.Zpos);
-        Build.BuildWall(Build.GetSquare(field, "E1"), "Concrete", Build.SquarePositions.Xpos);
-        Build.BuildWall(Build.GetSquare(field, "E2"), "Concrete", Build.SquarePositions.Xpos);
-        Build.BuildWall(Build.GetSquare(field, "E3"), "Concrete", Build.SquarePositions.Xpos);
-        Build.BuildWall(Build.GetSquare(field, "E4"), "Concrete", Build.SquarePositions.Xpos);
-        Build.BuildWall(Build.GetSquare(field, "E5"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "A5"), "ConcreteWall", Build.SquarePositions.Xneg);
+        Build.BuildWall(Build.GetSquare(field, "A3"), "ConcreteDoor", Build.SquarePositions.Xneg);
+        Build.BuildWall(Build.GetSquare(field, "A1"), "ConcreteWall", Build.SquarePositions.Xneg);
+        Build.BuildWall(Build.GetSquare(field, "A1"), "ConcreteWall", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "B1"), "ConcreteWall", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "C1"), "ConcreteWall", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "D1"), "ConcreteWall", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "E1"), "ConcreteWall", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "E1"), "ConcreteWall", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E2"), "ConcreteWall", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E3"), "ConcreteWall", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E4"), "ConcreteWall", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E5"), "ConcreteWall", Build.SquarePositions.Xpos);
+
         field = Build.GetField("A5").transform;
-        Build.BuildWall(Build.GetSquare(field, "E1"), "Concrete", Build.SquarePositions.Xpos);
-        Build.BuildWall(Build.GetSquare(field, "E2"), "Concrete", Build.SquarePositions.Xpos);
-        Build.BuildWall(Build.GetSquare(field, "E3"), "Concrete", Build.SquarePositions.Xpos);
-        Build.BuildWall(Build.GetSquare(field, "E4"), "Concrete", Build.SquarePositions.Xpos);
-        Build.BuildWall(Build.GetSquare(field, "E5"), "Concrete", Build.SquarePositions.Xpos);
-        Build.BuildWall(Build.GetSquare(field, "E5"), "Concrete", Build.SquarePositions.Zneg);
-        Build.BuildWall(Build.GetSquare(field, "D5"), "Concrete", Build.SquarePositions.Zneg);
-        Build.BuildWall(Build.GetSquare(field, "C5"), "Concrete", Build.SquarePositions.Zneg);
-        Build.BuildWall(Build.GetSquare(field, "B5"), "Concrete", Build.SquarePositions.Zneg);
-        Build.BuildWall(Build.GetSquare(field, "A5"), "Concrete", Build.SquarePositions.Zneg);
-        Build.BuildWall(Build.GetSquare(field, "A5"), "Concrete", Build.SquarePositions.Xneg);
-        Build.BuildWall(Build.GetSquare(field, "A1"), "Concrete", Build.SquarePositions.Xneg);
+        Build.BuildWall(Build.GetSquare(field, "E1"), "ConcreteWall", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E2"), "ConcreteWall", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E3"), "ConcreteWall", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E4"), "ConcreteWall", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E5"), "ConcreteWall", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E5"), "ConcreteWall", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "D5"), "ConcreteWall", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "C5"), "ConcreteWall", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "B5"), "ConcreteWall", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "A5"), "ConcreteWall", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "A5"), "ConcreteWall", Build.SquarePositions.Xneg);
+        Build.BuildWall(Build.GetSquare(field, "A3"), "ConcreteDoor", Build.SquarePositions.Xneg);
+        Build.BuildWall(Build.GetSquare(field, "A1"), "ConcreteWall", Build.SquarePositions.Xneg);
+    }
+    private void MakeCeilings()
+    {
+        Transform field = Build.GetField("A4");
+        string type;
+        foreach(Transform square in field)
+        {
+            type = square.name == "C3" ? "ConcreteWindow" : "ConcreteCeiling";
+            Build.BuildCeiling(square, type)
+        }
+
+        field = Build.GetField("A5");
+
     }
 }
