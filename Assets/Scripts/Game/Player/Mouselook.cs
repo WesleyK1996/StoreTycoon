@@ -12,7 +12,7 @@ public class Mouselook : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        sensitivity = 150F;//replace with playerprefs
+        sensitivity = 300f;//replace with playerprefs
         xRot = -90;
         yRot = 0;
         playerBody = transform.parent;

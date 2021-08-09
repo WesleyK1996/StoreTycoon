@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Move : MonoBehaviour
 {
-    int speed = 2;
+    int walkspeed = 2;
+    int runspeed = 5;
+    int speed;
 
     void Update()
     {
+        speed = Input.GetKey(KeyCode.LeftShift) ? runspeed : walkspeed;
         if (Input.GetKey(KeyCode.W))
             transform.Translate(Vector3.forward * Time.deltaTime * speed);
         if (Input.GetKey(KeyCode.A))

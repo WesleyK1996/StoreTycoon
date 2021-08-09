@@ -10,20 +10,20 @@ public class Store
     public string name;
     public int money;
     public GameObject parkingLot;
-    public List<GameObject> advertising;
-    public List<Field> fields;
+    public List<GameObject> advertising = new List<GameObject>();
+    public List<Field> fields = new List<Field>();
 
     [Serializable]
     public class Field
     {
         public string name;
         public GameObject field;
-        public List<Square> squares;
+        public List<Square> squares = new List<Square>();
 
         [Serializable]
         public class Square
         {
-            public GameObject square;
+            public GameObject self;
             public GameObject floor;
             //walls on the plus and minus x and z sides of the square 
             public GameObject wallXp;
@@ -31,30 +31,13 @@ public class Store
             public GameObject wallZp;
             public GameObject wallZm;
             public GameObject ceiling;
-            public GameObject ceilingLight;
-            public GameObject furniture;
+            public GameObject hangable;
+            public GameObject furniture;//needs custom furniture class
         }
     }
 }
 
 public class StoreManager : MonoBehaviour
 {
-    public static StoreManager Instance;
-    public Build build;
-    public JsonStuff data;
-
     public Store store = new Store();
-    private void OnEnable()
-    {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-        build = GetComponent<Build>();
-        data = FindObjectOfType<JsonStuff>();
-    }
-    private void OnApplicationQuit()
-    {
-        StartCoroutine(data.SaveJsonFile(store, true));
-    }
 }

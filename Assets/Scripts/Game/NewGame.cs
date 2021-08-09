@@ -6,90 +6,96 @@ using UnityEngine;
 
 public class NewGame : MonoBehaviour
 {
-    public StoreManager manager;
-
+    Store store = new Store();
     void Start()
     {
-        print(0);
         try
         {
             Destroy(FindObjectOfType<StoreManager>().gameObject);
         }
         catch { }
-        manager = Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject).GetComponent<StoreManager>();
-        manager.store.name = "New Store";
-        manager.store.money = 2000;
-        manager.build.SpawnParkingLot(1);
-        manager.store.parkingLot = GameObject.FindGameObjectWithTag("Parking");
+        Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject);
 
-        //print(1);
-        //for (int i = 0; i < 64; i++)
-        //    manager.store.fields.Add(MakeField(i));
-        //MakeStartStore();
+        store.name = "New Store";
+        store.money = 2000;
+        store.parkingLot = Build.BuildParkingLot(1);
+
+        for (int i = 0; i < 64; i++)
+            store.fields.Add(MakeField(i));
+
+        MakeStartStore();
+
+        FindObjectOfType<StoreManager>().store = store;
     }
 
-    Store.Field MakeField(int i)
+    Store.Field MakeField(int n)
     {
-        print("making field " + (i + 1));
         Store.Field field = new Store.Field();
-        field.name = Build.FieldName(i);
-        field.field = GetField(field.name);
-        field.squares = GetSquares(field.field.transform);
+        field.name = Build.IntToFieldString(n);
+        field.field = Build.GetField(field.name).gameObject;
+        for (int i = 0; i < 25; i++)
+            field.squares.Add(MakeSquare(field.field.transform, i));
 
         return field;
     }
 
-    private GameObject GetField(string fieldname)
+    private Store.Field.Square MakeSquare(Transform parent, int n)
     {
-        foreach (Transform Row in manager.transform)
-        {
-            if (Row.name == fieldname[0].ToString())
-            {
-                foreach (Transform Column in Row)
-                {
-                    if (Column.name == fieldname[1].ToString())
-                        return Column.gameObject;
-                }
-            }
-        }
-        return null;
-    }
-
-    private List<Store.Field.Square> GetSquares(Transform parent)
-    {
-        List<Store.Field.Square> r = new List<Store.Field.Square>();
-        for (int i = 0; i < 25; i++)
-        {
-            GameObject go = null;
-            r.Add(new Store.Field.Square() { square = go = new GameObject() });
-            go.transform.parent = parent;
-            go.name = Build.SquareName(i);
-            go.transform.localPosition = Build.SquareToPos(Build.SquareName(i));
-        }
-        return r;
+        Store.Field.Square square = new Store.Field.Square() { self = new GameObject() };
+        square.self.transform.parent = parent;
+        square.self.name = Build.IntToSquareString(n);
+        square.self.transform.localPosition = Build.SquareToPos(square.self.name);
+        return square;
     }
 
     private void MakeStartStore()
     {
         MakeFloors();
         MakeWalls();
+
+        StartCoroutine(JsonStuff.SaveJsonFile(JsonStuff.StoreToStoreData(store), true));
     }
 
     private void MakeFloors()
     {
-        print("making floors");
-        Transform field = GetField("A4").transform;
+        int fieldN = Build.StringToFieldInt("A4");
+        Transform field = store.fields[fieldN].field.transform;
         for (int i = 0; i < 25; i++)
-            manager.build.BuildFloor(field, Build.SquareName(i), "Concrete");
+            store.fields[fieldN].squares[i].floor = Build.BuildFloor(Build.GetSquare(field, Build.IntToSquareString(i)), "Concrete");
 
-        field = GetField("A5").transform;
+        fieldN = Build.StringToFieldInt("A5");
+        field = store.fields[fieldN].field.transform;
         for (int i = 0; i < 25; i++)
-            manager.build.BuildFloor(field, Build.SquareName(i), "Concrete");
+            store.fields[fieldN].squares[i].floor = Build.BuildFloor(Build.GetSquare(field, Build.IntToSquareString(i)), "Concrete");
     }
 
     private void MakeWalls()
     {
-        Transform field = GetField("A4").transform;
-        manager.build.BuildWall(field, "A1", "Concrete", Build.SquarePositions.Xneg);
+        Transform field = Build.GetField("A4").transform;
+        Build.BuildWall(Build.GetSquare(field, "A5"), "Concrete", Build.SquarePositions.Xneg);
+        Build.BuildWall(Build.GetSquare(field, "A1"), "Concrete", Build.SquarePositions.Xneg);
+        Build.BuildWall(Build.GetSquare(field, "A1"), "Concrete", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "B1"), "Concrete", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "C1"), "Concrete", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "D1"), "Concrete", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "E1"), "Concrete", Build.SquarePositions.Zpos);
+        Build.BuildWall(Build.GetSquare(field, "E1"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E2"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E3"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E4"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E5"), "Concrete", Build.SquarePositions.Xpos);
+        field = Build.GetField("A5").transform;
+        Build.BuildWall(Build.GetSquare(field, "E1"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E2"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E3"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E4"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E5"), "Concrete", Build.SquarePositions.Xpos);
+        Build.BuildWall(Build.GetSquare(field, "E5"), "Concrete", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "D5"), "Concrete", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "C5"), "Concrete", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "B5"), "Concrete", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "A5"), "Concrete", Build.SquarePositions.Zneg);
+        Build.BuildWall(Build.GetSquare(field, "A5"), "Concrete", Build.SquarePositions.Xneg);
+        Build.BuildWall(Build.GetSquare(field, "A1"), "Concrete", Build.SquarePositions.Xneg);
     }
 }
