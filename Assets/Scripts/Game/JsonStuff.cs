@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -36,10 +37,6 @@ public class StoreData
         }
     }
 }
-//with a full store theres about 5600 gameobjects, this is without products on the shelves
-//might need to look for something more efficient
-//LODs might help (slightly)
-//I could always decrease the amount of fields(currently 8x8) or decrease squares per field(currently 5x5)
 
 public class JsonStuff : MonoBehaviour
 {
@@ -77,7 +74,6 @@ public class JsonStuff : MonoBehaviour
             CreateNewGame();
             yield break;
         }
-        print("loading");
         yield return new WaitUntil(() => File.Exists(FilePath));
 
         bool FailedRead = false;
@@ -108,7 +104,10 @@ public class JsonStuff : MonoBehaviour
         else
         {
             if (content != "")
+            {
+                print(content);
                 LoadGame(JsonUtility.FromJson<StoreData>(content));
+            }
             else
                 CreateNewGame();
         }
@@ -169,14 +168,36 @@ public class JsonStuff : MonoBehaviour
         return storeData;
     }
 
+    public IEnumerator SaveGame(StoreData data, bool format)
+    {
+        print("saving");
+        yield return new WaitWhile(() => SaveInProgress);
+        SaveInProgress = true;
+        string s = data.name + "\n";
+        //need to convert the damn store to Json in a way thats not too ridiculous
+        //need to store every string AND deserialize all dictionaries
+        s += store. "\n";
+
+
+
+        if (format)
+            s = ConvertJsonToReadableString(s);
+        print(s);
+        SaveInProgress = false;
+        yield return null;
+    }
+
     public static IEnumerator SaveJsonFile(Store store, bool MakePretty)
     {
+        print("breaking out of save");
+        yield break;
         print("saving");
         yield return new WaitUntil(() => !SaveInProgress);
         SaveInProgress = true;
-        string s = JsonUtility.ToJson(StoreToStoreData(store));
+        //string s = JsonConvert.DeserializeObject<Dictionary<string, StoreData>>(StoreToStoreData(store));
         if (MakePretty)
             s = ConvertJsonToReadableString(s);
+        print(s);
 
         using (TextWriter tw = new StreamWriter(FilePath, append: false))
             tw.WriteLine(s);
@@ -186,6 +207,7 @@ public class JsonStuff : MonoBehaviour
 
     public void LoadGame(StoreData data)
     {
+        print("loading");
         Store store = Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject).GetComponent<StoreManager>().store;
         store.name = data.name;
         store.money = data.money;
@@ -202,10 +224,18 @@ public class JsonStuff : MonoBehaviour
                 square.self = new GameObject() { name = Build.IntToSquareString(j) };
                 square.self.transform.parent = field.field.transform;
                 square.self.transform.localPosition = Build.SquareToPos(square.self.name);
-                if (data.fields[i].squares[j].floor != "")
-                    Build.BuildFloor(data.fields[i].squares[j].floor, field.name, square.self.name);
-                if (data.fields[i].squares[j].wallXp != "")
-                    Build.BuildWall(square.self.transform, data.fields[i].squares[j].wallXp, Build.SquarePositions.Xpos);
+                if (data.fields[field.field.name].squares[square.self.name].floor != "")
+                    Build.BuildFloor(data.fields[field.field.name].squares[square.self.name].floor, field.name, square.self.name);
+                if (data.fields[field.field.name].squares[square.self.name].wallXp != "")
+                    Build.BuildWall(data.fields[field.field.name].squares[square.self.name].wallXp, field.field.name, square.self.name, Build.SquarePositions.Xp);
+                if (data.fields[field.field.name].squares[square.self.name].wallXm != "")
+                    Build.BuildWall(data.fields[field.field.name].squares[square.self.name].wallXm, field.field.name, square.self.name, Build.SquarePositions.Xm);
+                if (data.fields[field.field.name].squares[square.self.name].wallZp != "")
+                    Build.BuildWall(data.fields[field.field.name].squares[square.self.name].wallZp, field.field.name, square.self.name, Build.SquarePositions.Zp);
+                if (data.fields[field.field.name].squares[square.self.name].wallZm != "")
+                    Build.BuildWall(data.fields[field.field.name].squares[square.self.name].wallZm, field.field.name, square.self.name, Build.SquarePositions.Zm);
+                if (data.fields[field.field.name].squares[square.self.name].ceiling != "")
+                    Build.BuildCeiling(data.fields[field.field.name].squares[square.self.name].ceiling, field.field.name, square.self.name);
                 //the other stuffs
                 field.squares.Add(square.self.name, square);
             }
@@ -244,6 +274,9 @@ public class JsonStuff : MonoBehaviour
     private void OnApplicationQuit()
     {
         if (!delete)
-            StartCoroutine(SaveJsonFile(StoreToStoreData(FindObjectOfType<StoreManager>().store), true));
+        {
+            print(FindObjectOfType<StoreManager>().store.name);
+            StartCoroutine(SaveJsonFile(FindObjectOfType<StoreManager>().store, true));
+        }
     }
 }

@@ -32,10 +32,10 @@ public class Build : MonoBehaviour
 
     public enum SquarePositions
     {
-        Xpos,
-        Xneg,
-        Zpos,
-        Zneg
+        Xp,
+        Xm,
+        Zp,
+        Zm
     }
 
     private void OnEnable()
@@ -62,20 +62,45 @@ public class Build : MonoBehaviour
 
     public static GameObject BuildFloor(string type, string field, string square)
     {
-        GameObject go = Instantiate(Resources.Load(Path.Combine("Prefabs", "Floors", type)) as GameObject, GetSquare(GetField()));
-        go.name = go.name.Replace("(Clone)", "") + "Floor";
+        GameObject go = Instantiate(Resources.Load(Path.Combine("Prefabs", "Floors", type)) as GameObject, GetSquare(GetField(field), square));
+
+        go.name = go.name.Replace("(Clone)", "");
+        manager.store.fields[field].squares[square].floor = go;
         return go;
     }
 
-    public static GameObject BuildWall(Transform square, string type, SquarePositions side)
+    public static GameObject BuildWall(string type, string field, string square, SquarePositions side)
     {
-        GameObject go = Instantiate(Resources.Load(Path.Combine("Prefabs", "Walls", type)) as GameObject, square);
+        GameObject go = Instantiate(Resources.Load(Path.Combine("Prefabs", "Walls", type)) as GameObject, GetSquare(GetField(field), square));
+        go.name = go.name.Replace("(Clone)", "");
 
         if (type.EndsWith("Wall"))
             GetWallPos(go, side);
         if (type.EndsWith("Door"))
             GetDoorPos(go, side);
+
+        switch (side)
+        {
+            case SquarePositions.Xm:
+                manager.store.fields[field].squares[square].wallXm = go;
+                break;
+            case SquarePositions.Xp:
+                manager.store.fields[field].squares[square].wallXp = go;
+                break;
+            case SquarePositions.Zm:
+                manager.store.fields[field].squares[square].wallZm = go;
+                break;
+            case SquarePositions.Zp:
+                manager.store.fields[field].squares[square].wallZp = go;
+                break;
+        }
         return go;
+    }
+
+    public static void BuildCeiling(string type, string field, string square)
+    {
+        GameObject go = Instantiate(Resources.Load(Path.Combine("Prefabs", "Ceilings", type)) as GameObject, GetSquare(GetField(field), square));
+        go.name = go.name.Replace("(Clone)", "");
     }
 
     public static Vector3 SquareToPos(string square)
@@ -106,19 +131,19 @@ public class Build : MonoBehaviour
     {
         switch (side)
         {
-            case SquarePositions.Xpos:
+            case SquarePositions.Xp:
                 go.transform.localPosition += new Vector3(1, 1.75f, -.5f);
                 go.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
-            case SquarePositions.Xneg:
+            case SquarePositions.Xm:
                 go.transform.localPosition += new Vector3(0, 1.75f, -.5f);
                 go.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
-            case SquarePositions.Zpos:
+            case SquarePositions.Zp:
                 go.transform.localPosition += new Vector3(.5f, 1.75f, 0);
                 go.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
-            case SquarePositions.Zneg:
+            case SquarePositions.Zm:
                 go.transform.localPosition += new Vector3(.5f, 1.75f, -1);
                 break;
         }
@@ -128,19 +153,19 @@ public class Build : MonoBehaviour
     {
         switch (side)
         {
-            case SquarePositions.Xpos:
+            case SquarePositions.Xp:
                 go.transform.localPosition += new Vector3(1, .75f, -1.5f);
                 go.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
-            case SquarePositions.Xneg:
+            case SquarePositions.Xm:
                 go.transform.localPosition += new Vector3(0, .75f, .5f);
                 go.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
-            case SquarePositions.Zpos:
+            case SquarePositions.Zp:
                 go.transform.localPosition += new Vector3(1.5f, .75f, 0);
                 go.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
-            case SquarePositions.Zneg:
+            case SquarePositions.Zm:
                 go.transform.localPosition += new Vector3(-.5f, .75f, -1);
                 break;
         }

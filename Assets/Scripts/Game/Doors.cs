@@ -8,13 +8,11 @@ public class Doors : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        print("Open");
         StartCoroutine(LerpDoor(true));
     }
 
     private void OnTriggerExit(Collider other)
     {
-        print("Close");
         StartCoroutine(LerpDoor(false));
     }
 
