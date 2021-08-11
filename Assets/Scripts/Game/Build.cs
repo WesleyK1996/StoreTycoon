@@ -101,6 +101,8 @@ public class Build : MonoBehaviour
     {
         GameObject go = Instantiate(Resources.Load(Path.Combine("Prefabs", "Ceilings", type)) as GameObject, GetSquare(GetField(field), square));
         go.name = go.name.Replace("(Clone)", "");
+
+        manager.store.fields[field].squares[square].ceiling = go;
     }
 
     public static Vector3 SquareToPos(string square)
@@ -183,6 +185,7 @@ public class Build : MonoBehaviour
 
     public static int StringToFieldInt(string s)
     {
+        print(s);
         return (s[0] - 65) * 8 + int.Parse(s[1].ToString()) - 1;
     }
 

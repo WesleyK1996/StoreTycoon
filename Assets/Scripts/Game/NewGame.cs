@@ -95,6 +95,7 @@ public class NewGame : MonoBehaviour
         Build.BuildWall("ConcreteDoor", "A5", "A3", Build.SquarePositions.Xm);
         Build.BuildWall("ConcreteWall", "A5", "A1", Build.SquarePositions.Xm);
     }
+
     private void MakeCeilings()
     {
         Transform field = Build.GetField("A4");

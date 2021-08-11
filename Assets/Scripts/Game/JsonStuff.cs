@@ -13,13 +13,15 @@ public class StoreData
     public int money;
     public int parkingLot;
     public List<string> advertising;
-    public Dictionary<string, FieldData> fields = new Dictionary<string, FieldData>();
+    public List<string> keys;
+    public List<FieldData> fields;
 
     [Serializable]
     public class FieldData
     {
         public string name;
-        public Dictionary<string, SquareData> squares = new Dictionary<string, SquareData>();
+        public List<string> key;
+        public List<SquareData> squares;
 
         [Serializable]
         public class SquareData
@@ -127,12 +129,20 @@ public class JsonStuff : MonoBehaviour
         storeData.name = store.name;
         storeData.money = store.money;
         storeData.parkingLot = int.Parse(store.parkingLot.name.Replace("Parking", ""));
+        storeData.advertising = new List<string>();
         foreach (GameObject go in store.advertising)
             storeData.advertising.Add(go.name);
+        storeData.keys = new List<string>();
+        storeData.fields = new List<StoreData.FieldData>();
+        storeData.keys = new List<string>();
+
         foreach (Store.Field f in store.fields.Values)
         {
             StoreData.FieldData field = new StoreData.FieldData();
             field.name = f.name;
+            field.key = new List<string>();
+            field.squares = new List<StoreData.FieldData.SquareData>();
+
             foreach (Store.Field.Square s in f.squares.Values)
             {
                 StoreData.FieldData.SquareData square = new StoreData.FieldData.SquareData();
@@ -160,41 +170,21 @@ public class JsonStuff : MonoBehaviour
                 if (s.furniture != null)
                     square.furniture = s.furniture.name;
                 else square.furniture = null;
-
-                field.squares.Add(square.name, square);
+                field.key.Add(square.name);
+                field.squares.Add(square);
             }
-            storeData.fields.Add(field.name, field);
+            storeData.keys.Add(field.name);
+            storeData.fields.Add(field);
         }
         return storeData;
     }
 
-    public IEnumerator SaveGame(StoreData data, bool format)
-    {
-        print("saving");
-        yield return new WaitWhile(() => SaveInProgress);
-        SaveInProgress = true;
-        string s = data.name + "\n";
-        //need to convert the damn store to Json in a way thats not too ridiculous
-        //need to store every string AND deserialize all dictionaries
-        s += store. "\n";
-
-
-
-        if (format)
-            s = ConvertJsonToReadableString(s);
-        print(s);
-        SaveInProgress = false;
-        yield return null;
-    }
-
     public static IEnumerator SaveJsonFile(Store store, bool MakePretty)
     {
-        print("breaking out of save");
-        yield break;
         print("saving");
         yield return new WaitUntil(() => !SaveInProgress);
         SaveInProgress = true;
-        //string s = JsonConvert.DeserializeObject<Dictionary<string, StoreData>>(StoreToStoreData(store));
+        string s = JsonUtility.ToJson(StoreToStoreData(store));
         if (MakePretty)
             s = ConvertJsonToReadableString(s);
         print(s);
@@ -218,28 +208,30 @@ public class JsonStuff : MonoBehaviour
             Store.Field field = new Store.Field();
             field.name = Build.IntToFieldString(i);
             field.field = Build.GetField(Build.IntToFieldString(i)).gameObject;
+            store.fields.Add(field.name, field);
             for (int j = 0; j < 25; j++)
             {
                 Store.Field.Square square = new Store.Field.Square();
                 square.self = new GameObject() { name = Build.IntToSquareString(j) };
                 square.self.transform.parent = field.field.transform;
                 square.self.transform.localPosition = Build.SquareToPos(square.self.name);
-                if (data.fields[field.field.name].squares[square.self.name].floor != "")
-                    Build.BuildFloor(data.fields[field.field.name].squares[square.self.name].floor, field.name, square.self.name);
-                if (data.fields[field.field.name].squares[square.self.name].wallXp != "")
-                    Build.BuildWall(data.fields[field.field.name].squares[square.self.name].wallXp, field.field.name, square.self.name, Build.SquarePositions.Xp);
-                if (data.fields[field.field.name].squares[square.self.name].wallXm != "")
-                    Build.BuildWall(data.fields[field.field.name].squares[square.self.name].wallXm, field.field.name, square.self.name, Build.SquarePositions.Xm);
-                if (data.fields[field.field.name].squares[square.self.name].wallZp != "")
-                    Build.BuildWall(data.fields[field.field.name].squares[square.self.name].wallZp, field.field.name, square.self.name, Build.SquarePositions.Zp);
-                if (data.fields[field.field.name].squares[square.self.name].wallZm != "")
-                    Build.BuildWall(data.fields[field.field.name].squares[square.self.name].wallZm, field.field.name, square.self.name, Build.SquarePositions.Zm);
-                if (data.fields[field.field.name].squares[square.self.name].ceiling != "")
-                    Build.BuildCeiling(data.fields[field.field.name].squares[square.self.name].ceiling, field.field.name, square.self.name);
-                //the other stuffs
                 field.squares.Add(square.self.name, square);
+
+                string fieldN = Build.IntToSquareString(i);
+                if (data.fields[i].squares[j].floor != "")
+                    Build.BuildFloor(data.fields[i].squares[j].floor, fieldN, square.self.name);
+                if (data.fields[i].squares[j].wallXp != "")
+                    Build.BuildWall(data.fields[i].squares[j].wallXp, fieldN, square.self.name, Build.SquarePositions.Xp);
+                if (data.fields[i].squares[j].wallXm != "")
+                    Build.BuildWall(data.fields[i].squares[j].wallXm, fieldN, square.self.name, Build.SquarePositions.Xm);
+                if (data.fields[i].squares[j].wallZp != "")
+                    Build.BuildWall(data.fields[i].squares[j].wallZp, fieldN, square.self.name, Build.SquarePositions.Zp);
+                if (data.fields[i].squares[j].wallZm != "")
+                    Build.BuildWall(data.fields[i].squares[j].wallZm, fieldN, square.self.name, Build.SquarePositions.Zm);
+                if (data.fields[i].squares[j].ceiling != "")
+                    Build.BuildCeiling(data.fields[i].squares[j].ceiling, fieldN, square.self.name);
+                //the other stuffs
             }
-            store.fields.Add(field.name, field);
         }
         print("LOADING INCOMPLETE");
     }
