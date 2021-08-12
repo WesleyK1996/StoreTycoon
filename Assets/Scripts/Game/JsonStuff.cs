@@ -44,9 +44,9 @@ public class JsonStuff : MonoBehaviour
 {
     public static JsonStuff Instance;
 
-    static string FilePath;
+    string FilePath;
     string Dir;
-    static bool SaveInProgress;
+    bool SaveInProgress;
     public bool delete;
 
     private void OnEnable()
@@ -59,14 +59,13 @@ public class JsonStuff : MonoBehaviour
     {
         Dir = Application.persistentDataPath + "/JsonFiles/";
         FilePath = Dir + "JsonFile.Json";
-        StartCoroutine(LoadLocalizedText());
     }
 
     /// <summary>
     /// Load settings from json file. (Android friendly)
     /// </summary>
     /// <returns></returns>
-    IEnumerator LoadLocalizedText()
+    public IEnumerator LoadLocalizedText()
     {
         if (!Directory.Exists(Dir))
             Directory.CreateDirectory(Dir);
@@ -123,7 +122,7 @@ public class JsonStuff : MonoBehaviour
         gameObject.AddComponent<NewGame>();
     }
 
-    public static StoreData StoreToStoreData(Store store)
+    public StoreData StoreToStoreData(Store store)
     {
         StoreData storeData = new StoreData();
         storeData.name = store.name;
@@ -179,7 +178,7 @@ public class JsonStuff : MonoBehaviour
         return storeData;
     }
 
-    public static IEnumerator SaveJsonFile(Store store, bool MakePretty)
+    public IEnumerator SaveJsonFile(Store store, bool MakePretty)
     {
         print("saving");
         yield return new WaitUntil(() => !SaveInProgress);
@@ -198,7 +197,8 @@ public class JsonStuff : MonoBehaviour
     public void LoadGame(StoreData data)
     {
         print("loading");
-        Store store = Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject).GetComponent<StoreManager>().store;
+        Store store = (GameManager.Instance.manager = Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject).GetComponent<StoreManager>()).store;
+        Build.loading = true;
         store.name = data.name;
         store.money = data.money;
         Build.BuildParkingLot(data.parkingLot);
@@ -233,10 +233,12 @@ public class JsonStuff : MonoBehaviour
                 //the other stuffs
             }
         }
+
+        Build.loading = true;
         print("LOADING INCOMPLETE");
     }
 
-    static string ConvertJsonToReadableString(string s)
+    string ConvertJsonToReadableString(string s)
     {
         string tabs = "";
 
@@ -266,9 +268,6 @@ public class JsonStuff : MonoBehaviour
     private void OnApplicationQuit()
     {
         if (!delete)
-        {
-            print(FindObjectOfType<StoreManager>().store.name);
             StartCoroutine(SaveJsonFile(FindObjectOfType<StoreManager>().store, true));
-        }
     }
 }

@@ -16,7 +16,8 @@ public class NewGame : MonoBehaviour
         }
         catch { }
 
-        store = Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject).GetComponent<StoreManager>().store;
+        store = (GameManager.Instance.manager = Instantiate(Resources.Load(Path.Combine("Prefabs", "Store")) as GameObject).GetComponent<StoreManager>()).store;
+        Build.loading = true;
         store.name = "New Store";
         store.money = 2000;
         Build.BuildParkingLot(1);
@@ -53,7 +54,8 @@ public class NewGame : MonoBehaviour
         MakeWalls();
         MakeCeilings();
 
-        StartCoroutine(JsonStuff.SaveJsonFile(store, true));
+        StartCoroutine(JsonStuff.Instance.SaveJsonFile(store, true));
+        Build.loading = false;
     }
 
     private void MakeFloors()

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8757238210211507384}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hinge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 8757238210637594446}
   - component: {fileID: 8757238210637594447}
   - component: {fileID: 8757238210637594445}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -338,7 +338,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8757238210848605676}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hinge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -371,7 +371,7 @@ GameObject:
   - component: {fileID: 8757238210864244803}
   - component: {fileID: 8757238210864244800}
   - component: {fileID: 8757238210864244802}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ConcreteDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -435,7 +435,7 @@ GameObject:
   - component: {fileID: 8757238210884860596}
   - component: {fileID: 8757238210884860597}
   - component: {fileID: 8757238210884860594}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Doorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1507,7 +1507,7 @@ GameObject:
   - component: {fileID: 8757238210907110530}
   - component: {fileID: 8757238210907110531}
   - component: {fileID: 8757238210907110529}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}

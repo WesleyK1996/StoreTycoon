@@ -9,36 +9,89 @@ public class Car : MonoBehaviour
     public Transform[] wheels;
     public Rigidbody rb;
     public NavMeshAgent agent;
-    public Transform target;
 
-    bool left;
     bool parked;
+    bool coming = true;
+    string road;
+
+    //-2.49272
+    //17.12534
 
     private void Start()
     {
-        left = Random.Range(0, 2) == 0 ? true : false;
+        road = Random.Range(0, 2) == 0 ? "Top1" : "Bottom1";
+        if (road == "Top1")
+            transform.eulerAngles += new Vector3(0, 180, 0);
+        transform.position = GetRoadCenterVector(road);
+
+        agent.enabled = true;
+        agent.SetDestination(GetDestination());
     }
 
     void Update()
     {
         if (!parked)
             Drive();
-        foreach (Transform wheel in wheels)
-        {
-            wheel.Rotate(-Vector3.forward * rb.velocity.z);
-        }
     }
 
     void Drive()
     {
-        if (target != null && agent.destination != target.position)
-            agent.SetDestination(target.position);
-        if (agent.pathStatus == NavMeshPathStatus.PathComplete)
+        foreach (Transform wheel in wheels)
+            wheel.Rotate(-Vector3.forward * rb.velocity.z);
+        if (agent.remainingDistance < .5f && !parked)
             agent.SetDestination(GetDestination());
     }
 
     private Vector3 GetDestination()
     {
-        return Vector3.zero;
+        if (coming)
+        {
+            switch (road)
+            {
+                case "Top1":
+                    road = "Top4";
+                    break;
+                case "Bottom1":
+                    road = "Bottom5";
+                    break;
+                case "Top4":
+                case "Bottom5":
+                    road = "Top5";
+                    break;
+                case "Top5":
+                    road = "In";
+                    break;
+                case "In":
+                    return GetParkingSpace();
+                    break;
+            }
+        }
+        else
+        {
+
+        }
+        print(road);
+        return GetRoadCenterVector(road);
+    }
+
+    private Vector3 GetParkingSpace()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    Vector3 GetRoadCenterVector(string road)
+    {
+        Vector3 r = Vector3.zero;
+
+        foreach (Transform t in GameManager.Instance.road)
+            if (t.name == road)
+            {
+                r = t.GetComponent<Collider>().bounds.center;
+                if (road.Contains("Bottom"))
+                    r.z -= .4f;
+                r.y = 1;
+                return r;
+            }
+        return r;
     }
 }

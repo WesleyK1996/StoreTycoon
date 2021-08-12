@@ -7,6 +7,7 @@ using UnityEngine;
 public class Build : MonoBehaviour
 {
     static StoreManager manager;
+    public static bool loading;
     public enum FieldLetter
     {
         A,
@@ -66,6 +67,8 @@ public class Build : MonoBehaviour
 
         go.name = go.name.Replace("(Clone)", "");
         manager.store.fields[field].squares[square].floor = go;
+        if (!loading)
+            GameManager.Instance.baker.enabled = true;
         return go;
     }
 
