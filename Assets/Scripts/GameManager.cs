@@ -13,8 +13,8 @@ public class GameManager : MonoBehaviour
 
     public Transform road;
 
-    int minCarSpawnTime = 20;
-    int maxCarSpawnTime = 40;
+    int minCarSpawnTime = 500;
+    int maxCarSpawnTime = 1000;
     float carSpawnsIn = 3f;
 
     string[] cars = new string[1]

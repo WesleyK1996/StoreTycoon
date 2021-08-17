@@ -21,11 +21,14 @@ public class Mouselook : MonoBehaviour
 
     private void Update()
     {
-        xRot += Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
-        yRot += Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
-        yRot = ClampAngle(yRot, -90, 90);
-        transform.localRotation = Quaternion.AngleAxis(yRot, -Vector3.right);
-        playerBody.rotation = Quaternion.AngleAxis(xRot, Vector3.up);
+        if (Cursor.lockState == CursorLockMode.Locked)
+        {
+            xRot += Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
+            yRot += Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
+            yRot = ClampAngle(yRot, -90, 90);
+            transform.localRotation = Quaternion.AngleAxis(yRot, -Vector3.right);
+            playerBody.rotation = Quaternion.AngleAxis(xRot, Vector3.up);
+        }
     }
 
     public float ClampAngle(float angle, float min, float max)

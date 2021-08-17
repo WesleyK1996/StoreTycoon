@@ -51,11 +51,24 @@ public class Car : MonoBehaviour
 
         SetBehaviour();
         targetPos = GetDestination();
+        if (status == CarStatus.parked)
+        {
+            driving = false;
+            yield break;
+        }
         agent.SetDestination(targetPos);
 
         while (Vector3.Distance(transform.position, targetPos) > .1f)
             yield return new WaitForEndOfFrame();
         driving = false;
+    }
+
+    public void SpawnCustomers()
+    {
+        transform.eulerAngles = parkingSpace.gameObject.transform.eulerAngles;
+
+        agent.enabled = false;
+        enabled = false;
     }
 
     private void SetBehaviour()
@@ -94,6 +107,11 @@ public class Car : MonoBehaviour
                 else
                     target = target == "Top4" ? "Top10" : "Bottom10";
                 break;
+            case "Top10":
+            case "Bottom10":
+                Destroy(agent);
+                Destroy(gameObject);
+                break;
         }
         return GetRoadCenterVector();
     }
@@ -106,7 +124,6 @@ public class Car : MonoBehaviour
                 target = "In";
                 return GetRoadCenterVector();
             default:
-                print(ParkingLot.Instance.GetDestination(this));
                 return ParkingLot.Instance.GetDestination(this);
         }
     }
@@ -115,62 +132,6 @@ public class Car : MonoBehaviour
     {
         throw new System.NotImplementedException();
     }
-
-    //void Drive()
-    //{
-    //    foreach (Transform wheel in wheels)
-    //        wheel.Rotate(-Vector3.forward * rb.velocity.z);
-
-    //    switch(status)
-    //    {
-    //        case CarStatus.coming:
-    //            break;
-    //    }
-    //    if (Vector3.Distance(transform.position, targetPos) > .1f)
-    //        agent.SetDestination(GetDestination());
-    //}
-
-
-
-    //private Vector3 GetDestination()
-    //{
-    //    switch (status)
-    //    {
-    //        case CarStatus.coming:
-    //            switch (target)
-    //            {
-    //                case "Top1":
-    //                    target = "Top4";
-    //                    break;
-    //                case "Bottom1":
-    //                    target = "Bottom5";
-    //                    break;
-    //                case "Top4":
-    //                case "Bottom5":
-    //                    if (CanPark(out parkingSpace))
-    //                    {
-    //                        status = CarStatus.parking;
-    //                        target = "Top5";
-    //                    }
-    //                    else
-    //                        target = target == "Top4" ? "Top10" : "Bottom10";
-    //                    break;
-    //            }
-    //            break;
-    //        case CarStatus.parking:
-    //            switch (target)
-    //            {
-    //                case "Top5":
-    //                    target = "In";
-    //                    break;
-    //                case "In":
-    //                    return ParkingLot.Instance.GetDestination(this);
-    //            }
-    //            break;
-    //    }
-    //    Debug.Break();
-    //    return GetRoadCenterVector();
-    //}
 
     bool CanPark(out ParkingSpace parkingSpace)
     {

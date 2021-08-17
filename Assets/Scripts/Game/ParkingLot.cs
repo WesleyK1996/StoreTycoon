@@ -46,10 +46,15 @@ public class ParkingLot : MonoBehaviour
         bool road = true;
         switch (car.target)
         {
+            case "ParkingSpace1":
+            case "ParkingSpace2":
+            case "ParkingSpace3":
+                road = false;
+                car.SetStatus(Car.CarStatus.parked);
+                break;
             case "A2":
                 car.target = car.parkingSpace.gameObject.name;
                 road = false;
-                car.SetStatus(Car.CarStatus.parked);
                 break;
             case "In":
                 car.target = "A2";
