@@ -43,6 +43,9 @@ public class Car : MonoBehaviour
     {
         if (!driving && status != CarStatus.parked)
             StartCoroutine(Drive());
+        if (driving)
+            foreach (Transform wheel in wheels)
+                wheel.Rotate(Vector3.forward, -1f);
     }
 
     IEnumerator Drive()
@@ -53,12 +56,13 @@ public class Car : MonoBehaviour
         targetPos = GetDestination();
         if (status == CarStatus.parked)
         {
+            SpawnCustomers();
             driving = false;
             yield break;
         }
         agent.SetDestination(targetPos);
 
-        while (Vector3.Distance(transform.position, targetPos) > .1f)
+        while (Vector3.Distance(transform.position, targetPos) > agent.stoppingDistance)
             yield return new WaitForEndOfFrame();
         driving = false;
     }

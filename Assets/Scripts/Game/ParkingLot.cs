@@ -17,7 +17,6 @@ public class ParkingLot : MonoBehaviour
 
     public delegate Vector3 DestinationMethod(Car car);
     public DestinationMethod GetDestination;
-    Car car;
 
     void Start()
     {
@@ -43,24 +42,28 @@ public class ParkingLot : MonoBehaviour
 
     Vector3 Parking1(Car car)//parking for lot 1
     {
+        print("getting dest");
         bool road = true;
         switch (car.target)
         {
             case "ParkingSpace1":
             case "ParkingSpace2":
             case "ParkingSpace3":
+                print("parked");
                 road = false;
                 car.SetStatus(Car.CarStatus.parked);
                 break;
             case "A2":
+                print("A2");
                 car.target = car.parkingSpace.gameObject.name;
                 road = false;
                 break;
             case "In":
+                print("In");
                 car.target = "A2";
                 break;
         }
-
+        print(GetRoadCenterVector(car.target, road));
         return GetRoadCenterVector(car.target, road);
     }
 }

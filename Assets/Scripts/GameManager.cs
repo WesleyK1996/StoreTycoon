@@ -13,13 +13,15 @@ public class GameManager : MonoBehaviour
 
     public Transform road;
 
-    int minCarSpawnTime = 500;
-    int maxCarSpawnTime = 1000;
+    int minCarSpawnTime = 20;
+    int maxCarSpawnTime = 21;
     float carSpawnsIn = 3f;
 
-    string[] cars = new string[1]
+    string[] cars = new string[3]
     {
-        "Car1Blue"
+        "Blue1",
+        "Green1",
+        "Purple1"
     };
 
     private void OnEnable()

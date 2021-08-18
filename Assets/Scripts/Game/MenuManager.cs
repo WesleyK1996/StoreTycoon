@@ -6,12 +6,10 @@ using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
-    ScrollRect tabs;
     GameObject currentMenu;
 
     private void Start()
     {
-        tabs = transform.Find("Build").Find("Scroll View Tabs").GetComponent<ScrollRect>();
         currentMenu = transform.Find("Main").gameObject;
     }
 
@@ -20,16 +18,18 @@ public class MenuManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab) && currentMenu.name == "Main") ToggleCursor();
         if (Input.GetKeyDown(KeyCode.B)) ToggleBuild();
     }
+
     private void ToggleCursor()
     {
         Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? CursorLockMode.None : CursorLockMode.Locked;
     }
 
-    private void ToggleBuild()
+    public void ToggleBuild()
     {
-        ToggleCursor();
         GameObject go = transform.Find("Build").gameObject;
         go.SetActive(!go.activeSelf);
+        if((Cursor.lockState == CursorLockMode.Locked && go.activeSelf == true) || (Cursor.lockState == CursorLockMode.None && go.activeSelf == false))
+        ToggleCursor();
     }
 
 }
